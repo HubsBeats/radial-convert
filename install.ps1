@@ -40,7 +40,14 @@ if (-not $SkipFfmpeg) {
   $ff = Join-Path $dest 'tools\ffmpeg.exe'
   $existing = Get-Command ffmpeg.exe -ErrorAction SilentlyContinue
   if (Test-Path $ff) { Write-Host "already at $ff" }
-  elseif ($existing) { Write-Host "using $($existing.Source)" }
+  elseif ($existing) {
+    # Copy the real exe next to the app (WinGet's Links entry is a symlink).
+    $item = Get-Item $existing.Source
+    $real = if ($item.LinkType) { @($item.Target)[0] } else { $item.FullName }
+    if ($real -and -not [IO.Path]::IsPathRooted($real)) { $real = Join-Path $item.DirectoryName $real }
+    Copy-Item $real $ff -Force
+    Write-Host "copied $real to $ff"
+  }
   else {
     try {
       $zip = Join-Path $env:TEMP 'radialconvert-ffmpeg.zip'

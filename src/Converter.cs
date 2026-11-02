@@ -262,6 +262,11 @@ namespace RadialConvert
             c.Add(@"C:\ffmpeg\bin\ffmpeg.exe");
             c.Add(@"C:\ProgramData\chocolatey\bin\ffmpeg.exe");
 
+            // WinGet's Links\ffmpeg.exe is a symlink some launchers can't run, so prefer real files.
+            foreach (string f in c)
+            {
+                try { if (File.Exists(f) && (File.GetAttributes(f) & FileAttributes.ReparsePoint) == 0) return Path.GetFullPath(f); } catch { }
+            }
             foreach (string f in c)
             {
                 try { if (File.Exists(f)) return Path.GetFullPath(f); } catch { }

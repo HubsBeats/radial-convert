@@ -2,7 +2,10 @@
 param([string]$Exe = (Join-Path $env:LOCALAPPDATA 'RadialConvert\RadialConvert.exe'))
 $ErrorActionPreference = 'Stop'
 $ff = Join-Path $env:LOCALAPPDATA 'RadialConvert\tools\ffmpeg.exe'
-if (-not (Test-Path $ff)) { $ff = (Get-Command ffmpeg.exe).Source }
+if (-not (Test-Path $ff)) {
+  $item = Get-Item (Get-Command ffmpeg.exe).Source
+  $ff = if ($item.LinkType) { @($item.Target)[0] } else { $item.FullName }
+}
 $work = Join-Path $env:TEMP ('radialconvert-test-' + [guid]::NewGuid().ToString('N'))
 New-Item -ItemType Directory $work | Out-Null
 $env:RADIALCONVERT_HOME = Join-Path $work 'home'
