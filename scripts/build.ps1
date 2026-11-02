@@ -11,7 +11,7 @@ $out = Join-Path $dist 'RadialConvert.exe'
 $srcFiles = Get-ChildItem (Join-Path $root 'src') -Filter *.cs | ForEach-Object { $_.FullName }
 $argsList = @('/nologo', '/target:winexe', '/platform:anycpu', '/optimize+', "/out:$out",
   '/r:System.dll', '/r:System.Core.dll', '/r:System.Drawing.dll', '/r:System.Windows.Forms.dll',
-  '/r:System.Web.Extensions.dll', '/r:Microsoft.CSharp.dll')
+  '/r:System.Web.Extensions.dll', '/r:Microsoft.CSharp.dll', '/r:System.IO.Compression.dll', '/r:System.IO.Compression.FileSystem.dll')
 $ico = Join-Path $root 'assets\radial.ico'
 if (Test-Path $ico) { $argsList += "/win32icon:$ico" }
 & $csc @argsList @srcFiles

@@ -1,0 +1,39 @@
+# Builds RadialConvert.exe on Windows and publishes a GitHub release.
+# Trigger: push a tag like v1.2.0 (it should match Program.Version), or run it by hand with a tag.
+name: Release
+on:
+  push:
+    tags: ['v*']
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag, e.g. v1.2.0'
+        required: true
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build with the .NET Framework compiler
+        shell: powershell
+        run: ./scripts/build.ps1
+      - name: Selftest
+        shell: powershell
+        run: |
+          $p = Start-Process dist\RadialConvert.exe -ArgumentList selftest -Wait -PassThru
+          if ($p.ExitCode -ne 0) { throw "selftest failed" }
+      - name: Package installer zip
+        shell: powershell
+        run: |
+          Copy-Item dist\RadialConvert.exe prebuilt\RadialConvert.exe -Force
+          Compress-Archive -Path install.ps1, uninstall.ps1, README.md, src, scripts, assets, prebuilt, tests -DestinationPath RadialConvert-installer.zip
+      - name: Publish release
+        shell: bash
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.event.inputs.tag || github.ref_name }}
+        run: |
+          gh release create "$TAG" dist/RadialConvert.exe RadialConvert-installer.zip \
+            --title "Radial Convert $TAG" --notes-file .github/release-notes.md --target "$GITHUB_SHA"

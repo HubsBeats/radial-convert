@@ -283,6 +283,41 @@ namespace RadialConvert
         }
     }
 
+    static class FfmpegDownload
+    {
+        public const string Url = "https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip";
+
+        // One-time download for the standalone exe: pulls the FFmpeg essentials build into
+        // %APPDATA%\RadialConvert\tools, which FindFfmpeg already searches.
+        public static string Run()
+        {
+            string dir = Path.Combine(AppConfig.HomeDir, "tools");
+            Directory.CreateDirectory(dir);
+            string zip = Path.Combine(Path.GetTempPath(), "radialconvert-ffmpeg-" + Guid.NewGuid().ToString("N") + ".zip");
+            try
+            {
+                System.Net.ServicePointManager.SecurityProtocol |= (System.Net.SecurityProtocolType)3072; // TLS 1.2
+                using (var wc = new System.Net.WebClient()) wc.DownloadFile(Url, zip);
+                using (var archive = System.IO.Compression.ZipFile.OpenRead(zip))
+                {
+                    foreach (var e in archive.Entries)
+                    {
+                        if (!e.Name.Equals("ffmpeg.exe", StringComparison.OrdinalIgnoreCase)) continue;
+                        string dest = Path.Combine(dir, "ffmpeg.exe");
+                        System.IO.Compression.ZipFileExtensions.ExtractToFile(e, dest, true);
+                        Log.Write("downloaded FFmpeg to " + dest);
+                        return dest;
+                    }
+                }
+                throw new Exception("ffmpeg.exe wasn't in the download");
+            }
+            finally
+            {
+                try { File.Delete(zip); } catch { }
+            }
+        }
+    }
+
     static class Log
     {
         static readonly object Sync = new object();

@@ -42,13 +42,32 @@ namespace RadialConvert
             if (!hook.Installed)
                 Tip("Radial Convert couldn't start", "Windows refused the mouse hook. Check log.txt.", ToolTipIcon.Error);
             else if (Tools.FindFfmpeg(cfg) == null)
-                Tip("FFmpeg is missing", "Images to PNG, JPG and PDF still work. Run install.ps1 again for audio and video.", ToolTipIcon.Warning);
+                GetFfmpeg();
             else if (!File.Exists(Path.Combine(AppConfig.HomeDir, ".welcomed")))
             {
                 Tip("Radial Convert is running", "Select files in Explorer or on the desktop, hold Shift and right-click, then flick toward a format.", ToolTipIcon.Info);
                 try { File.WriteAllText(Path.Combine(AppConfig.HomeDir, ".welcomed"), DateTime.Now.ToString("o")); } catch { }
             }
             Log.Write("started, ffmpeg=" + (Tools.FindFfmpeg(cfg) ?? "missing"));
+        }
+
+        // Standalone exe with no FFmpeg yet: fetch it once in the background.
+        void GetFfmpeg()
+        {
+            Tip("Getting FFmpeg (one time)", "Downloading the converter for audio, video, GIF and WebP (about 100 MB). Images to PNG, JPG and PDF already work.", ToolTipIcon.Info);
+            var th = new Thread(() =>
+            {
+                string err = null;
+                try { FfmpegDownload.Run(); }
+                catch (Exception ex) { err = ex.Message; Log.Write("FFmpeg download failed: " + ex); }
+                ui.BeginInvoke((Action)(() =>
+                {
+                    if (err == null) Tip("Radial Convert is ready", "Select files, hold Shift and right-click, then flick toward a format.", ToolTipIcon.Info);
+                    else Tip("FFmpeg download failed", err + " Audio and video need FFmpeg; restart Radial Convert to try again.", ToolTipIcon.Warning);
+                }));
+            });
+            th.IsBackground = true;
+            th.Start();
         }
 
         ContextMenuStrip BuildMenu()

@@ -21,6 +21,12 @@ right-click, flick toward a format and let go. The new file appears next to the 
 
 ## Install
 
+**Just the exe:** grab `RadialConvert.exe` from the latest
+[release](../../releases/latest) and run it. It downloads FFmpeg once on first run. Windows may show
+"Windows protected your PC" (unsigned exe): More info, then Run anyway.
+
+**Full install** (builds on your PC, no SmartScreen warning, starts with Windows):
+
 ```powershell
 powershell -ExecutionPolicy Bypass -File install.ps1
 ```
@@ -58,6 +64,12 @@ RadialConvert startup on|off
 
 Source is C# 5 against .NET Framework 4.8, so it builds with Windows' built-in `csc.exe`
 (`scripts/build.ps1`) or with Mono on Linux (`scripts/build.sh`).
+
+## Releases
+
+Push a tag matching `Program.Version` (e.g. `git tag v1.2.0 && git push origin v1.2.0`). The
+`Release` workflow builds the exe on a Windows runner, runs the selftest and publishes
+`RadialConvert.exe` plus `RadialConvert-installer.zip`.
 
 ## Tests
 

@@ -11,6 +11,6 @@ icon=()
 mcs -langversion:5 -target:winexe -platform:anycpu -optimize+ -nostdlib -noconfig \
   -lib:"$api" -lib:"$api/Facades" \
   -r:mscorlib.dll -r:System.dll -r:System.Core.dll -r:System.Drawing.dll -r:System.Windows.Forms.dll \
-  -r:System.Web.Extensions.dll -r:Microsoft.CSharp.dll \
+  -r:System.Web.Extensions.dll -r:Microsoft.CSharp.dll -r:System.IO.Compression.dll -r:System.IO.Compression.FileSystem.dll \
   "${icon[@]}" -out:"$out" "$here"/src/*.cs
 echo "built $out"
