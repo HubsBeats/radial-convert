@@ -11,7 +11,7 @@ New-Item -ItemType Directory $work | Out-Null
 $env:RADIALCONVERT_HOME = Join-Path $work 'home'
 Push-Location $work
 function FF { & $ff -hide_banner -loglevel error -y @args }
-FF -f lavfi -i testsrc2=size=320x240 -frames:v 1 photo.jpg
+FF -f lavfi -i testsrc2=size=320x240 '-frames:v' 1 photo.jpg
 FF -f lavfi -i sine=frequency=440:duration=1 tone.wav
 FF -f lavfi -i testsrc2=size=320x240:rate=24 -f lavfi -i sine=duration=1 -t 1 -shortest clip.mov
 $fail = 0
