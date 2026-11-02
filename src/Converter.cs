@@ -269,9 +269,17 @@ namespace RadialConvert
             }
             foreach (string f in c)
             {
-                try { if (File.Exists(f)) return Path.GetFullPath(f); } catch { }
+                try { if (File.Exists(f) && CanOpen(f)) return Path.GetFullPath(f); } catch { }
             }
             return null;
+        }
+
+        // File.Exists is true for a symlink whose target was removed (e.g. an uninstalled
+        // winget package), so make sure the file really opens.
+        static bool CanOpen(string f)
+        {
+            try { using (File.OpenRead(f)) { } return true; }
+            catch { return false; }
         }
     }
 

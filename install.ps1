@@ -39,6 +39,8 @@ if (-not $SkipFfmpeg) {
   Write-Host '== FFmpeg'
   $ff = Join-Path $dest 'tools\ffmpeg.exe'
   $existing = Get-Command ffmpeg.exe -ErrorAction SilentlyContinue
+  # skip a dead link (e.g. a removed winget package): only accept a file that opens
+  if ($existing) { try { [IO.File]::OpenRead($existing.Source).Close() } catch { $existing = $null } }
   if (Test-Path $ff) { Write-Host "already at $ff" }
   elseif ($existing) {
     # Copy the real exe next to the app (WinGet's Links entry is a symlink).
