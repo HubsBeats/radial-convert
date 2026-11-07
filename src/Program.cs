@@ -121,8 +121,11 @@ namespace RadialConvert
                 {
                     // Renders the radial menu to a PNG, for docs and visual checks.
                     string outPng = files.Count > 0 ? files[0] : "radial-preview.png";
+                    // preview <out.png> [selected -1..3] [up,right,down,left] [centre text]
                     int sel = files.Count > 1 ? int.Parse(files[1]) : 0;
-                    using (var bmp = RadialMenu.Draw(600, 2f, new[] { "png", "jpg", "pdf", "gif" }, "JPEG", sel))
+                    string[] lab = files.Count > 2 ? files[2].Split(',') : new[] { "png", "jpg", "pdf", "gif" };
+                    string mid = files.Count > 3 ? files[3] : "JPEG";
+                    using (var bmp = RadialMenu.Draw(600, 2f, lab, mid, sel))
                         bmp.Save(outPng, System.Drawing.Imaging.ImageFormat.Png);
                     using (var ic = IconMaker.MakeBitmap(256)) ic.Save(Path.ChangeExtension(outPng, ".icon.png"), System.Drawing.Imaging.ImageFormat.Png);
                     Console.WriteLine("wrote " + outPng);

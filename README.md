@@ -3,7 +3,7 @@
 Convert files without opening anything. Select files in Explorer or on the desktop, hold **Shift**,
 right-click, flick toward a format and let go. The new file appears next to the original.
 
-![radial menu](assets/preview.png)
+![Radial Convert demo](assets/demo.gif)
 
 | Selected | Up | Right | Down | Left |
 |---|---|---|---|---|
